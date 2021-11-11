@@ -93,8 +93,6 @@ numexpr==2.7.1
 numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1588605083040/work
 oauthlib==3.0.1
 olefile==0.46
-opencv-python==4.4.0.44
-opt-einsum==0+untagged.56.g2664021.dirty
 packaging==20.1
 pamela==1.0.0
 pandas==1.0.3
@@ -151,17 +149,12 @@ SQLAlchemy @ file:///home/conda/feedstock_root/build_artifacts/sqlalchemy_158942
 statsmodels==0.11.1
 sympy==1.5.1
 tblib==1.6.0
-tensorboard==2.1.1
-tensorflow==2.1.0
-tensorflow-estimator==2.1.0
 termcolor==1.1.0
 terminado==0.8.3
 testpath==0.4.4
 threadpoolctl==2.0.0
 tifffile @ file:///home/conda/feedstock_root/build_artifacts/tifffile_1589323165428/work
 toolz==0.10.0
-torch==1.4.0
-torchvision==0.5.0
 tornado==6.0.4
 tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1588513834538/work
 traitlets==4.3.3

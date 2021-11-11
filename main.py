@@ -9,7 +9,8 @@ from utils_drl import Agent
 from utils_env import MyEnv
 from utils_memory import ReplayMemory
 
-
+torch.set_num_threads(7)
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 GAMMA = 0.99
 GLOBAL_SEED = 0
 MEM_SIZE = 100_000
@@ -25,12 +26,14 @@ BATCH_SIZE = 32
 POLICY_UPDATE = 4
 TARGET_UPDATE = 10_000
 WARM_STEPS = 50_000
-MAX_STEPS = 50_000_000
+MAX_STEPS = 8_500_000
 EVALUATE_FREQ = 100_000
 
 rand = random.Random()
 rand.seed(GLOBAL_SEED)
-new_seed = lambda: rand.randint(0, 1000_000)
+def new_seed(): return rand.randint(0, 1000_000)
+
+
 os.mkdir(SAVE_PREFIX)
 
 torch.manual_seed(new_seed())
@@ -44,6 +47,7 @@ agent = Agent(
     EPS_START,
     EPS_END,
     EPS_DECAY,
+    restore='./model_015'
 )
 memory = ReplayMemory(STACK_SIZE + 1, MEM_SIZE, device)
 
@@ -67,7 +71,10 @@ for step in progressive:
     memory.push(env.make_folded_state(obs_queue), action, reward, done)
 
     if step % POLICY_UPDATE == 0 and training:
-        agent.learn(memory, BATCH_SIZE)
+        loss = agent.learn(memory, BATCH_SIZE)
+        if step % EVALUATE_FREQ == 0:
+            with open("rewards.txt", "a") as fp:
+                fp.write(f"LOSS {step//POLICY_UPDATE:3d} {step:8d} {loss}\n")
 
     if step % TARGET_UPDATE == 0:
         agent.sync()
@@ -75,7 +82,8 @@ for step in progressive:
     if step % EVALUATE_FREQ == 0:
         avg_reward, frames = env.evaluate(obs_queue, agent, render=RENDER)
         with open("rewards.txt", "a") as fp:
-            fp.write(f"{step//EVALUATE_FREQ:3d} {step:8d} {avg_reward:.1f}\n")
+            fp.write(
+                f"REWD {step//EVALUATE_FREQ:3d} {step:8d} {avg_reward:.1f}\n")
         if RENDER:
             prefix = f"eval_{step//EVALUATE_FREQ:03d}"
             os.mkdir(prefix)
